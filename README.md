@@ -4,9 +4,24 @@ Bad Idea Factory is proud to present the talking point tracker, a tool that watc
 
 This project leverages [Opened Captions](https://github.com/slifty/opened-captions), a project that exposes TV captions in real time for programmers to use in non-consumptive applications.
 
+## Technologies
+
+This project requires Python 3 and node.  The project is written in node, but the NLP magic is all from the spaCy project (which is python).
+
 ## Setting up
 
 You can learn more details about setting up a development environment by reading our [CONTRIBUTING.md](CONTRIBUTING.md).  The basic setup involves:
+
+Installing spaCy:
+
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -U spacy
+pip install -r nlp/requirements.txt
+```
+
+Setting up this project:
 
 ```
 $> yarn install
@@ -14,7 +29,9 @@ $> cp .env.template .env && vi .env
 $> yarn start
 ```
 
-Which probably won't actually work, but is better than no documentation, right?
+After you finish these steps, it probably won't actually work, but this is better than no documentation, right?
+
+If you get any spacy issues, make sure you have the dependencies all installed for your local environment, [as described in their documentation](https://spacy.io/usage/)
 
 ## Tech Stack
 
