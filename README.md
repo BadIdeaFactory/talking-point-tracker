@@ -12,13 +12,22 @@ This project requires Python 3 and node.  The project is written in node, but th
 
 You can learn more details about setting up a development environment by reading our [CONTRIBUTING.md](CONTRIBUTING.md).  The basic setup involves:
 
-Installing spaCy:
+Installing spaCy / our NLP tools:
 
 ```
 python -m venv .venv
 source .venv/bin/activate
 pip install -U spacy
 pip install -r nlp/requirements.txt
+```
+
+Loading the model for truecaser (you can also train your own):
+
+```
+wget https://github.com/nreimers/truecaser/releases/download/v1.0/english_distributions.obj.zip
+unzip english_distributions.obj.zip
+mv distributions.obj nlp/truecaser_distributions.obj
+rm english_distributions.obj.zip
 ```
 
 Setting up this project:

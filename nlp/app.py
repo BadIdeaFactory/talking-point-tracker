@@ -1,10 +1,20 @@
 # coding: utf8
 from __future__ import unicode_literals
 
+import pickle
+import os
 import hug
 from hug_middleware_cors import CORSMiddleware
 import spacy
+import truecaser
 
+script_dir = os.path.dirname(__file__)
+
+uniDist = ""
+backwardBiDist = ""
+forwardBiDist = ""
+trigramDist = ""
+wordCasingLookup = ""
 
 MODELS = {
     'en_core_web_sm': spacy.load('en_core_web_sm'),
@@ -54,12 +64,56 @@ def ent(text: str, model: str):
     return [{'start': ent.start_char, 'end': ent.end_char, 'label': ent.label_}
             for ent in doc.ents]
 
-@hug.head('/health')
-def head():
-    return "The NLP server is up"
+
+@hug.post('/sentences')
+def sents(text: str, model: str):
+    """Get entities for displaCy ENT visualizer."""
+    nlp = MODELS[model]
+    doc = nlp(text)
+    return sents_to_strings(doc)
+
+@hug.post('/truecase')
+def truecase(text: str, model: str):
+    """Returns the truecase versionof this thing"""
+    nlp = MODELS[model]
+    doc = nlp(text)
+    return " ".join([truecase_sent(sent) for sent in doc.sents])
+
+def sents_to_strings(doc):
+  strings = []
+  for sent in doc.sents:
+    mapped_words = map(lambda x: x.text,
+      doc[sent.start:sent.end])
+    strings.append(" ".join(mapped_words))
+
+  return strings
+
+def truecase_sent(sent):
+  truecased_tokens = truecaser.getTrueCase(
+    map(lambda x: x.text, sent),
+    'as-is',
+    wordCasingLookup,
+    uniDist,
+    backwardBiDist,
+    forwardBiDist,
+    trigramDist
+  )
+  return " ".join(truecased_tokens)
+
+
 
 if __name__ == '__main__':
+    """Get the truecase stuff set up"""
+    truecaser_distributions_path = os.path.join(script_dir, 'truecaser_distributions.obj')
+    f = open(truecaser_distributions_path, 'rb')
+    uniDist = pickle.load(f)
+    backwardBiDist = pickle.load(f)
+    forwardBiDist = pickle.load(f)
+    trigramDist = pickle.load(f)
+    wordCasingLookup = pickle.load(f)
+    f.close()
+
     import waitress
     app = hug.API(__name__)
-    app.http.add_middleware(CORSMiddleware(app))
+    # app.http.add_middleware(CORSMiddleware(app))
     waitress.serve(__hug_wsgi__, port=8081)

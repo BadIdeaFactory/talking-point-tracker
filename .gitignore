@@ -62,3 +62,8 @@ typings/
 
 # oh god we added python
 .venv
+__pycache__/
+
+
+# don't store objects
+*.obj
