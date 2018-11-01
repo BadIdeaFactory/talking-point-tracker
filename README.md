@@ -30,12 +30,20 @@ mv distributions.obj nlp/truecaser_distributions.obj
 rm english_distributions.obj.zip
 ```
 
+Create the database:
+
+```
+createdb tpt
+createuser tpt -P
+```
+
 Setting up this project:
 
 ```
-$> yarn install
-$> cp .env.template .env && vi .env
-$> yarn start
+yarn install
+cp .env.template .env && vi .env
+sequelize db:migrate
+yarn start
 ```
 
 After you finish these steps, it probably won't actually work, but this is better than no documentation, right?
