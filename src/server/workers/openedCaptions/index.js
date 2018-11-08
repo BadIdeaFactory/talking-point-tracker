@@ -1,6 +1,7 @@
 import OpenedCaptions from 'opened-captions'
 import waitOn from 'wait-on'
 import rp from 'request-promise'
+import models from '../../models'
 
 let buffer = []
 let sentencesPromise = null
@@ -76,17 +77,25 @@ function cleanContent(content) {
   return cleanedContent
 }
 
-function processSentence(sentence) {
-  getTruecase(sentence).then((sentence) =>
-    getEnt(sentence).then((ents) => {
-      ents = ents.map((ent) => {
-        return sentence.substring(ent.start, ent.end) + " (" + ent.label + ")"
-      })
+async function processSentence(content) {
+  const sentence = await getTruecase(content)
+  const ents = await getEnt(sentence)
+  console.log(sentence)
 
-      console.log(cleanContent(sentence) + "[" + ents.join(" ") + "]")
+  // Save the sentence
+  const storedSentence = await models.Sentence.create({
+    content: cleanContent(sentence)
+  })
 
+  // Save the entities
+  ents.map((ent) => {
+    models.NamedEntity.create({
+      entity: sentence.substring(ent.start, ent.end),
+      type: ent.label,
+      sentenceId: storedSentence.id,
+      model: 'en_core_web_lg'
     })
-  )
+  })
 }
 
 function capitalizeNames(text) {
