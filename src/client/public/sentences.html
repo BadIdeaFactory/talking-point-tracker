@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.18/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+  <title>Talking Point Tracker</title>
+  <script type="text/javascript">
+
+    $(function() {
+      var mainTable = $("#mainTable").DataTable({});
+      $.ajax({
+        type: "GET",
+        url: "/graphql?query=query AllContent { sentences { content } } ",
+        success: function(response) {
+          $table = $("#sentences").DataTable({
+            pageLength: 100
+          });
+
+          for(var x in response.data.sentences) {
+            var item = response.data.sentences[x];
+            var row = [
+              "",
+              item.content
+            ]
+            $table.row.add(row).draw(false);
+          }
+        }
+      });
+    });
+
+  </script>
+</head>
+<body>
+  <h1>Sentences on CSPAN</h1>
+  <table id="sentences" style="width:100%;">
+    <thead>
+      <tr>
+        <th style="width: 200px;"></th>
+        <th style="width: 100%;"></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</body>
+</html>

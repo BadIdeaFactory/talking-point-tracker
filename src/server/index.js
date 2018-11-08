@@ -2,9 +2,11 @@ import http from 'http'
 import express from 'express'
 import dotenv from 'dotenv'
 import graphqlHTTP from 'express-graphql'
+import path from 'path'
+
 import schema from './schema'
 
-import openedCaptionsWorker from './workers/opened-captions'
+import openedCaptionsWorker from './workers/openedCaptions'
 
 // Configure settings
 dotenv.config()
@@ -13,6 +15,10 @@ const port = process.env.API_PORT || 3000
 // Express app setup
 const app = express()
 const server = http.createServer(app)
+
+// Serve the static / compiled content
+app.use('/static', express.static(path.join(__dirname, '../client/public')))
+
 
 // GraphQL setup
 app.use('/graphql', graphqlHTTP({

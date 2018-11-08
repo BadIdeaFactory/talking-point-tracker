@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.18/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.18/datatables.min.js"></script>
+  <title>Talking Point Tracker</title>
+  <script type="text/javascript">
+
+    $(function() {
+      var mainTable = $("#mainTable").DataTable({});
+      $.ajax({
+        type: "GET",
+        url: "/graphql?query=query AllContent { namedEntities { sentenceId, entity, type } } ",
+        success: function(response) {
+          var dict = {};
+          for(var x in response.data.namedEntities) {
+            var item = response.data.namedEntities[x];
+            if(!dict[item.entity]) {
+              dict[item.entity] = 0
+            }
+            dict[item.entity] += 1;
+          }
+          $table = $("#entities").DataTable({
+            pageLength: 100,
+            order: [[ 1, "desc" ]]
+          });
+
+          for(var x in dict) {
+            var row = [
+              x,
+              dict[x],
+            ];
+            $table.row.add(row).draw(false);
+          }
+        }
+      });
+    });
+
+  </script>
+</head>
+<body>
+  <h1>Named Entities on CSPAN</h1>
+  <table id="entities">
+    <thead>
+      <tr>
+        <th style="width: 200px;">Entity</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</body>
+</html>
