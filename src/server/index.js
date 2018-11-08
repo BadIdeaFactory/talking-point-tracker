@@ -17,7 +17,7 @@ const app = express()
 const server = http.createServer(app)
 
 // Serve the static / compiled content
-app.use('/static', express.static(path.join(__dirname, '../client/public')))
+app.use('/static', express.static(path.join(__dirname, '../public')))
 
 
 // GraphQL setup
