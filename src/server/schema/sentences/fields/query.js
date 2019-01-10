@@ -2,11 +2,17 @@ import { GraphQLString, GraphQLInt, GraphQLList } from 'graphql'
 
 // App Imports
 import SentenceType from '../type'
-import { getAll, getById } from '../resolvers'
+import { getSentences, getById } from '../resolvers'
 
 export const sentences = {
   type: new GraphQLList(SentenceType),
-  resolve: getAll,
+  resolve: getSentences,
+  args: {
+    relatedTo: { type: GraphQLString },
+    containing: { type: GraphQLString },
+    after: { type: GraphQLString },
+    before: { type: GraphQLString },
+  },
 }
 
 export const sentence = {
