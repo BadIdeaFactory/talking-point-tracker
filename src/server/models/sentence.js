@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'channel_id',
       references: {
         model: 'channel',
-        key: 'id'
+        key: 'id',
       },
     },
     createdAt: {
@@ -25,7 +25,13 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'sentences',
   })
 
-  Sentence.associate = function () {}
+  Sentence.associate = (models) => {
+    models.Sentence.hasMany(models.NamedEntity, {
+      as: 'NamedEntities',
+      foreignKey: 'sentence_id',
+      sourceKey: 'id',
+    })
+  }
 
   return Sentence
 }

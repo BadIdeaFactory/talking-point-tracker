@@ -13,7 +13,7 @@ module.exports = {
       type: Sequelize.INTEGER,
       references: {
         model: 'channels',
-        key: 'id'
+        key: 'id',
       },
     },
     created_at: {
@@ -27,4 +27,4 @@ module.exports = {
   }),
 
   down: queryInterface => queryInterface.dropTable('sentences'),
-};
+}

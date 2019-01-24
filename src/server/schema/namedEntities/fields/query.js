@@ -1,12 +1,19 @@
-import { GraphQLString, GraphQLInt, GraphQLList } from 'graphql'
+import {
+  GraphQLString, GraphQLInt, GraphQLList,
+} from 'graphql'
 
 // App Imports
 import NamedEntityType from '../type'
-import { getAll, getById } from '../resolvers'
+import { getNamedEntities, getById } from '../resolvers'
 
 export const namedEntities = {
   type: new GraphQLList(NamedEntityType),
-  resolve: getAll,
+  resolve: getNamedEntities,
+  args: {
+    relatedTo: { type: GraphQLString },
+    after: { type: GraphQLString },
+    before: { type: GraphQLString },
+  },
 }
 
 export const namedEntity = {

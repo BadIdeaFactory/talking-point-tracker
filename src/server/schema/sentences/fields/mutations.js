@@ -13,7 +13,7 @@ export const sentenceCreate = {
     },
     channelId: {
       name: 'channelId',
-      type: GraphQLInt
+      type: GraphQLInt,
     },
   },
   resolve: create,

@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Channel = sequelize.define('Channel', {
     base_url: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     name: {
       type: DataTypes.STRING,
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'channels',
   })
 
-  Channel.associate = function () {}
+  Channel.associate = () => {}
 
   return Channel
 }

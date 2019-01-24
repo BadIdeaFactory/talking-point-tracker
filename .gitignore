@@ -70,3 +70,9 @@ __pycache__/
 
 # don't store objects
 *.obj
+
+# I guess react made this?
+.cache
+
+# parcel dists to dist
+dist/

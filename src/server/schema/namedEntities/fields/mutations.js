@@ -21,7 +21,7 @@ export const namedEntityCreate = {
     },
     sentenceId: {
       name: 'sentenceId',
-      type: GraphQLInt
+      type: GraphQLInt,
     },
   },
   resolve: create,

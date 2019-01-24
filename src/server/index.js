@@ -3,6 +3,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import graphqlHTTP from 'express-graphql'
 import path from 'path'
+import cors from 'cors'
 
 import schema from './schema'
 
@@ -17,8 +18,10 @@ const app = express()
 const server = http.createServer(app)
 
 // Serve the static / compiled content
-app.use('/static', express.static(path.join(__dirname, '../client/public')))
+app.use('/static', express.static(path.join(__dirname, '../public')))
 
+// Enable cors
+app.use(cors())
 
 // GraphQL setup
 app.use('/graphql', graphqlHTTP({

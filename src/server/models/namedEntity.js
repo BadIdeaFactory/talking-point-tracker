@@ -9,14 +9,6 @@ module.exports = (sequelize, DataTypes) => {
     model: {
       type: DataTypes.STRING,
     },
-    sentenceId: {
-      type: DataTypes.INTEGER,
-      field: 'sentence_id',
-      references: {
-        model: 'sentence',
-        key: 'id'
-      },
-    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -31,7 +23,13 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'named_entities',
   })
 
-  NamedEntity.associate = function () {}
+  NamedEntity.associate = (models) => {
+    models.NamedEntity.belongsTo(models.Sentence, {
+      as: 'Sentence',
+      foreignKey: 'sentence_id',
+      targetKey: 'id',
+    })
+  }
 
   return NamedEntity
 }
