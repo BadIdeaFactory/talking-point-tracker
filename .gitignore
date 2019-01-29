@@ -76,3 +76,6 @@ __pycache__/
 
 # parcel dists to dist
 dist/
+
+# VS Code paraphernalia
+.vscode
