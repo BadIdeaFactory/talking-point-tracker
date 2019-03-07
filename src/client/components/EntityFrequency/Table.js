@@ -6,8 +6,7 @@ import EntityFrequencyRow from './Row'
 
 class EntityFrequencyTable extends React.Component {
   static propTypes = {
-    data: PropTypes.arrayOf(PropTypes.number).isRequired,
-    labels: PropTypes.arrayOf(PropTypes.string).isRequired,
+    data: PropTypes.arrayOf(PropTypes.object).isRequired,
   }
 
   componentDidMount() {
@@ -30,18 +29,16 @@ class EntityFrequencyTable extends React.Component {
   }
 
   render() {
-    const { data, labels } = this.props
+    const { data } = this.props
 
     const sortList = (e) => {
       e.preventDefault()
     }
 
-    const renderedEntities = data.map((d, i) => (
+    const renderedEntities = data.map(entity => (
       <EntityFrequencyRow
-        label={labels[i]}
-        total={d}
-        recent={Math.round(d * Math.random())}
-        key={(labels[i] + Math.round(Math.random() * 10000))}
+        entity={entity}
+        key={(entity.label + Math.round(Math.random() * 10000))}
       />
     ))
 

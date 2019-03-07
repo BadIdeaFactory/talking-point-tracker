@@ -41,6 +41,7 @@ class Dashboard extends React.Component {
     intervalScope: PropTypes.shape({
       key: PropTypes.string,
       startTime: PropTypes.string,
+      recentStartTime: PropTypes.string,
       endTime: PropTypes.string,
     }).isRequired,
   }
@@ -64,33 +65,37 @@ class Dashboard extends React.Component {
               return <p>{error.message}</p>
             }
 
+            const recentStartTime = moment(intervalScope.recentStartTime)
             const aggregatedData = data.namedEntities
               .filter(namedEntity => ['PERSON', 'ORG'].includes(namedEntity.type))
               .reduce((accumulator, currentValue) => {
                 if (!(currentValue.entity in accumulator)) {
-                  accumulator[currentValue.entity] = 0
+                  accumulator[currentValue.entity] = {
+                    total: 0,
+                    recent: 0,
+                  }
                 }
-                accumulator[currentValue.entity] += 1
+                accumulator[currentValue.entity].total += 1
+                if (moment(parseInt(currentValue.createdAt, 10)).isSameOrAfter(recentStartTime)) {
+                  accumulator[currentValue.entity].recent += 1
+                }
                 return accumulator
               }, {})
 
             const frequencyTotals = Object.keys(aggregatedData).map(key => ({
-              key,
-              total: aggregatedData[key],
+              label: key,
+              total: aggregatedData[key].total,
+              recent: aggregatedData[key].recent,
             }))
 
             // TODO: Which column we sort by will be determined by state
             frequencyTotals.sort((a, b) => b.total - a.total)
 
-            const labels = frequencyTotals.map(x => x.key)
-            const totals = frequencyTotals.map(x => x.total)
-
             return (
               <>
                 <StyledEntityFrequencyTableWrapper>
                   <EntityFrequencyTable
-                    data={totals}
-                    labels={labels}
+                    data={frequencyTotals}
                   />
                 </StyledEntityFrequencyTableWrapper>
                 <StyledEntityFrequencyGraphWrapper>
