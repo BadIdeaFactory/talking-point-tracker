@@ -170,5 +170,4 @@ const StyledTranscript = styled.div`
   }
 `
 
-
 export default Transcript

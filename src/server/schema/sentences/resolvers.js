@@ -54,7 +54,6 @@ export async function getSentences(parentValue, args) {
     })
   }
 
-
   return models.Sentence.findAll(parameters)
 }
 

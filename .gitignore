@@ -67,7 +67,6 @@ typings/
 .venv
 __pycache__/
 
-
 # don't store objects
 *.obj
 

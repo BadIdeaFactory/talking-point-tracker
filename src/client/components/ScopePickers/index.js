@@ -29,5 +29,4 @@ ScopePickers.propTypes = {
   setIntervalScope: PropTypes.func.isRequired,
 }
 
-
 export default ScopePickers

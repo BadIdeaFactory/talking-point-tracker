@@ -24,5 +24,4 @@ IntervalPicker.propTypes = {
   setIntervalScope: PropTypes.func.isRequired,
 }
 
-
 export default IntervalPicker
