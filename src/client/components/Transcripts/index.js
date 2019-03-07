@@ -110,8 +110,15 @@ const StyledTranscript = styled.div`
   transition: 250ms ease max-height;
   max-height: ${props => (props.expanded ? '100%' : '50%')};
 
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "title-bar"
+    "sentences"
+    "actions";
+
   @media only screen and (min-width: 1200px) {
-    display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: 1fr auto;
     grid-template-areas:
@@ -119,21 +126,19 @@ const StyledTranscript = styled.div`
       "title-bar actions";
 
     .sentences {
-      grid-area: sentences;
       border-top: 4px solid black;
-    }
-    .actions {
-      grid-area: actions;
     }
   }
   
   .sentences {
+    grid-area: sentences;
     display: flex;
     flex-direction: column-reverse;
     overflow-y: scroll;
   }
 
   .actions {
+    grid-area: actions;
     display: flex;
     justify-content: space-between;
     background-color: #FAFAFA;
