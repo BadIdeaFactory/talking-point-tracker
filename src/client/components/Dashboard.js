@@ -65,6 +65,7 @@ class Dashboard extends React.Component {
             }
 
             const aggregatedData = data.namedEntities
+              .filter(namedEntity => ['PERSON', 'ORG'].includes(namedEntity.type))
               .reduce((accumulator, currentValue) => {
                 if (!(currentValue.entity in accumulator)) {
                   accumulator[currentValue.entity] = 0
