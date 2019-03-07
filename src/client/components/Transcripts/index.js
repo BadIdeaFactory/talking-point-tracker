@@ -12,7 +12,9 @@ class Transcript extends React.Component {
     sentences: PropTypes.arrayOf(PropTypes.object).isRequired,
   }
 
-  state = {}
+  state = {
+    expanded: false,
+  }
 
   actionBar = false
 
