@@ -6,28 +6,28 @@ import CategoryPicker from './CategoryPicker'
 import IntervalPicker from './IntervalPicker'
 import ChannelPicker from './ChannelPicker'
 
-const StyledPickerBar = styled.div`
+const StyledScopePickers = styled.div`
   display: inline-block;
   font-size: 1.2rem;  
 `
 
-const PickerBar = (props) => {
+const ScopePickers = (props) => {
   const { setIntervalScope } = props
   return (
     <>
-      <StyledPickerBar>
+      <StyledScopePickers>
         <CategoryPicker />
         <span className="facetText">mentioned</span>
         <IntervalPicker setIntervalScope={setIntervalScope} />
         <span className="facetText">on</span>
         <ChannelPicker />
-      </StyledPickerBar>
+      </StyledScopePickers>
     </>
   )
 }
-PickerBar.propTypes = {
+ScopePickers.propTypes = {
   setIntervalScope: PropTypes.func.isRequired,
 }
 
 
-export default PickerBar
+export default ScopePickers

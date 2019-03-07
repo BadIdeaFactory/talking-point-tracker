@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import PickerBar from './ScopePickers'
+import ScopePickers from './ScopePickers'
 
 const Header = (props) => {
   const { setIntervalScope } = props
@@ -16,7 +16,7 @@ const Header = (props) => {
             Tracker
           </h1>
         </a>
-        <PickerBar setIntervalScope={setIntervalScope} />
+        <ScopePickers setIntervalScope={setIntervalScope} />
       </StyledHeader>
     </>
   )
