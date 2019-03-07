@@ -38,25 +38,23 @@ const RECENT_SENTENCES_QUERY = gql`
 
 class Dashboard extends React.Component {
   static propTypes = {
-    startTime: PropTypes.string,
-    endTime: PropTypes.string,
-  }
-
-  static defaultProps = {
-    startTime: moment().subtract(4, 'hours').toISOString(),
-    endTime: moment().toISOString(),
+    intervalScope: PropTypes.shape({
+      key: PropTypes.string,
+      startTime: PropTypes.string,
+      endTime: PropTypes.string,
+    }).isRequired,
   }
 
   render() {
-    const { startTime, endTime } = this.props
+    const { intervalScope } = this.props
     return (
       <>
         <StyledEntityFrequencyTableWrapper>
           <Query
             query={ALL_ENTITIES_QUERY}
             variables={{
-              after: startTime,
-              before: endTime,
+              after: intervalScope.startTime,
+              before: intervalScope.endTime,
             }}
           >
             {({ data, error, loading }) => {

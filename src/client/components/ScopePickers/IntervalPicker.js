@@ -8,22 +8,7 @@ const IntervalPicker = (props) => {
   const { setIntervalScope } = props
 
   const changeFrequencyInterval = (e) => {
-    let startTime = 0
-
-    switch (e.target.value) {
-      case 'pastweek':
-        startTime = moment().subtract(1, 'week').toISOString()
-        break
-      case 'past24hours':
-        startTime = moment().subtract(24, 'hours').toISOString()
-        break
-      case 'past4hours':
-      default:
-        startTime = moment().subtract(4, 'hours').toISOString()
-        break
-    }
-
-    setIntervalScope(startTime, moment().toISOString())
+    setIntervalScope(e.target.value)
   }
 
   return (
