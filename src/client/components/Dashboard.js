@@ -86,10 +86,7 @@ class Dashboard extends React.Component {
               label: key,
               total: aggregatedData[key].total,
               recent: aggregatedData[key].recent,
-            }))
-
-            // TODO: Which column we sort by will be determined by state
-            frequencyTotals.sort((a, b) => b.total - a.total)
+            })).sort((a, b) => (b.total - a.total))
 
             return (
               <>

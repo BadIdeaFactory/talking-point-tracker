@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import EntityFrequencyColumnHeader from './ColumnHeader'
 import EntityFrequencyRow from './Row'
 
 class EntityFrequencyTable extends React.Component {
@@ -9,8 +10,24 @@ class EntityFrequencyTable extends React.Component {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
   }
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      data: props.data,
+      sortBy: 'total',
+      sortDirection: 'desc',
+    }
+  }
+
   componentDidMount() {
-    const { data } = this.props
+    const { data } = this.state
+    if (data.length) {
+      this.matchTableColumnWidths()
+    }
+  }
+
+  componentDidUpdate() {
+    const { data } = this.state
     if (data.length) {
       this.matchTableColumnWidths()
     }
@@ -18,53 +35,75 @@ class EntityFrequencyTable extends React.Component {
 
   // We use grid to keep the thead fixed and scroll the tbody, but doing so breaks the connection
   // between thead and tbody column widths. I experimented with recreating table-like layout using
-  // grid, but render was 300% slower. This is much faster.
+  // grid, but render was 300% slower. This is much faster. It's a bidirectional resizer: it will
+  // set the head cells to the width of the body cells or vice versa based on which cell is wider.
   matchTableColumnWidths = () => {
-    const labelWidth = this.tbody.querySelector('tr:first-child > .label').offsetWidth
-    this.thead.querySelector('.label').width = `${labelWidth}px`
-    const totalWidth = this.thead.querySelector('.total').offsetWidth
-    this.tbody.querySelector('tr:first-child > .total').width = `${totalWidth}px`
-    const recentWidth = this.thead.querySelector('.recent').offsetWidth
-    this.tbody.querySelector('tr:first-child > .recent').width = `${recentWidth}px`
+    const headCells = this.thead.querySelectorAll('th')
+    const bodyCells = this.tbody.querySelectorAll('tr:first-child > td')
+    if (headCells.length === bodyCells.length) {
+      headCells.forEach((cell, i) => {
+        const headCell = cell // Dumb hack; linter doesn't like "reassigning" params
+        const bodyCell = bodyCells[i]
+        const headCellWidth = headCell.offsetWidth
+        const bodyCellWidth = bodyCell.offsetWidth
+        if (headCellWidth > bodyCellWidth) {
+          bodyCell.width = `${headCellWidth}px`
+        } else {
+          headCell.width = `${bodyCellWidth}px`
+        }
+      })
+    }
+  }
+
+  sortList = (columnName) => {
+    const { data, sortBy, sortDirection } = this.state
+
+    const newState = {}
+    if (columnName === sortBy) {
+      // We're already sorted by this column, just invert direction.
+      newState.sortDirection = sortDirection === 'desc' ? 'asc' : 'desc'
+    } else {
+      newState.sortBy = columnName
+      newState.sortDirection = 'desc'
+    }
+
+    data.sort((a, b) => {
+      if (columnName === 'label') {
+        let order = b[columnName] > a[columnName] ? 1 : -1
+        if (newState.sortDirection === 'desc') {
+          order *= -1
+        }
+        return order
+      }
+      if (newState.sortDirection === 'desc') {
+        return b[columnName] - a[columnName]
+      }
+      return a[columnName] - b[columnName]
+    })
+    newState.data = data
+
+    this.setState(newState)
   }
 
   render() {
-    const { data } = this.props
-
-    const sortList = (e) => {
-      e.preventDefault()
-    }
-
-    const renderedEntities = data.map(entity => (
-      <EntityFrequencyRow
-        entity={entity}
-        key={(entity.label + Math.round(Math.random() * 10000))}
-      />
-    ))
+    const { data, sortBy } = this.state
 
     return (
       <StyledEntityFrequencyTable cellPadding="0" cellSpacing="0">
         <thead ref={(c) => { this.thead = c }}>
           <tr>
-            <th className="label">
-              <button type="button" onClick={sortList}>
-                Label
-              </button>
-            </th>
-            <th className="total">
-              <button type="button" onClick={sortList}>
-                Total
-              </button>
-            </th>
-            <th className="recent">
-              <button type="button" onClick={sortList}>
-                Recent
-              </button>
-            </th>
+            <EntityFrequencyColumnHeader columnName="label" sortList={this.sortList} sorted={sortBy === 'label'} />
+            <EntityFrequencyColumnHeader columnName="total" sortList={this.sortList} sorted={sortBy === 'total'} />
+            <EntityFrequencyColumnHeader columnName="recent" sortList={this.sortList} sorted={sortBy === 'recent'} />
           </tr>
         </thead>
         <tbody ref={(c) => { this.tbody = c }}>
-          {renderedEntities}
+          {data.map(entity => (
+            <EntityFrequencyRow
+              entity={entity}
+              key={(entity.label + Math.round(Math.random() * 10000))}
+            />
+          ))}
         </tbody>
       </StyledEntityFrequencyTable>
     )
@@ -92,23 +131,6 @@ const StyledEntityFrequencyTable = styled.table`
 
   thead {
     grid-area: thead;
-
-    th {
-      padding-bottom: 0.5rem;
-    }
-
-    button {
-      appearance: none;
-      font-size: 1rem;
-      line-height: 1rem;
-      font-weight: 600;
-      font-family: inherit;
-      padding: 0.15rem 0;
-      margin: 0;
-      border: none;
-      border-bottom: 1px solid #2F80ED;
-      cursor: pointer;
-    }
   }
 
   tbody {
