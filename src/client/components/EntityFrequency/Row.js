@@ -9,8 +9,13 @@ const EntityFrequencyRow = (props) => {
   } = props
 
   const selectEntity = () => {
-    setActiveEntity(entity.label)
-    history.push(`/detail?entity=${entity.label}`)
+    if (active) {
+      setActiveEntity('')
+      history.push('/')
+    } else {
+      setActiveEntity(entity.label)
+      history.push(`/detail?entity=${entity.label}`)
+    }
   }
 
   const setClassName = () => ((active) ? 'active' : '')
