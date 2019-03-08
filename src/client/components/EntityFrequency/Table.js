@@ -8,6 +8,12 @@ import EntityFrequencyRow from './Row'
 class EntityFrequencyTable extends React.Component {
   static propTypes = {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    activeEntity: PropTypes.string,
+    setActiveEntity: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    activeEntity: '',
   }
 
   constructor(props) {
@@ -86,6 +92,7 @@ class EntityFrequencyTable extends React.Component {
   }
 
   render() {
+    const { activeEntity, setActiveEntity } = this.props
     const { data, sortBy } = this.state
 
     return (
@@ -102,6 +109,8 @@ class EntityFrequencyTable extends React.Component {
             <EntityFrequencyRow
               entity={entity}
               key={(entity.label + Math.round(Math.random() * 10000))}
+              active={entity.label === activeEntity}
+              setActiveEntity={setActiveEntity}
             />
           ))}
         </tbody>

@@ -37,6 +37,8 @@ const RECENT_SENTENCES_QUERY = gql`
 `
 
 class Dashboard extends React.Component {
+  state = {}
+
   static propTypes = {
     intervalScope: PropTypes.shape({
       key: PropTypes.string,
@@ -46,8 +48,14 @@ class Dashboard extends React.Component {
     }).isRequired,
   }
 
+  setActiveEntity = (activeEntity) => {
+    this.setState({ activeEntity })
+  }
+
   render() {
     const { intervalScope } = this.props
+    const { activeEntity } = this.state
+
     return (
       <>
         <Query
@@ -93,6 +101,8 @@ class Dashboard extends React.Component {
                 <StyledEntityFrequencyTableWrapper>
                   <EntityFrequencyTable
                     data={frequencyTotals}
+                    activeEntity={activeEntity}
+                    setActiveEntity={this.setActiveEntity}
                   />
                 </StyledEntityFrequencyTableWrapper>
                 <StyledEntityFrequencyGraphWrapper>
