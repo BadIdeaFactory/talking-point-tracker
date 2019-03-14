@@ -1,13 +1,14 @@
-import { PubSub } from 'graphql-subscriptions'
+import { pubsub } from '../../subscription'
 
 // App Imports
 import SentenceType from '../type'
 
-const pubsub = new PubSub()
-
-const sentenceAdded = {
+export const sentenceAdded = {
   type: SentenceType,
-  resolve: () => pubsub.asyncIterator('sentenceAdded'),
+  resolve: (payload) => {
+    console.log(payload)
+    console.log("TEST")
+    return "TEST"
+  },
+  subscribe: () => pubsub.asyncIterator('sentenceAdded'),
 }
-
-export default sentenceAdded

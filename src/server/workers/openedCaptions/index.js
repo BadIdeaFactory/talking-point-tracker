@@ -3,6 +3,8 @@ import waitOn from 'wait-on'
 import rp from 'request-promise'
 import models from '../../models'
 
+import { pubsub } from '../../schema/subscription'
+
 let buffer = []
 let sentencesPromise = null
 
@@ -84,6 +86,8 @@ async function processSentence(content) {
     sentenceId: storedSentence.id,
     model: 'en_core_web_lg',
   }))
+
+  pubsub.publish('sentenceAdded', { sentenceAdded: storedSentence })
 }
 
 function newWord(word) {

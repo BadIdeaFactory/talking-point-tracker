@@ -2,8 +2,10 @@ import http from 'http'
 import express from 'express'
 import dotenv from 'dotenv'
 import graphqlHTTP from 'express-graphql'
+import { execute, subscribe } from 'graphql';
 import path from 'path'
 import cors from 'cors'
+import { SubscriptionServer } from 'subscriptions-transport-ws'
 
 import schema from './schema'
 
@@ -31,12 +33,21 @@ app.use('/graphql', graphqlHTTP({
 app.use('/graphiql', graphqlHTTP({
   schema,
   graphiql: true,
+  endpointUrl: '/graphql',
+  subscriptionsEndpoint: `ws://localhost:${port}/subscriptions`,
 }))
 
-server.listen(port)
-server.on('listening', () => {
-  /* eslint-disable-next-line no-console */
+server.listen(port, () => {
   console.log(`Server is listening on port: ${port}`)
+  // Set up the WebSocket for handling GraphQL subscriptions
+  new SubscriptionServer({
+    execute,
+    subscribe,
+    schema
+  }, {
+    server,
+    path: '/subscriptions',
+  })
 })
 
 // Kick off the workers
