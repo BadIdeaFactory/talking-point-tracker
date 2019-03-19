@@ -31,13 +31,21 @@ const EntityFrequencyRow = (props) => {
     }
   }
 
-  const setClassName = () => {
+  const rowClassName = () => {
     const classNames = []
     if (active) {
       classNames.push('active')
     }
     if (highlighted) {
       classNames.push('highlighted')
+    }
+    return classNames.join(' ')
+  }
+
+  const recentClassName = (recent) => {
+    const classNames = ['recent']
+    if (recent === 0) {
+      classNames.push('zero')
     }
     return classNames.join(' ')
   }
@@ -49,11 +57,13 @@ const EntityFrequencyRow = (props) => {
       onBlur={unhighlightEntity}
       onMouseEnter={highlightEntity}
       onMouseLeave={unhighlightEntity}
-      className={setClassName()}
+      className={rowClassName()}
     >
       <td className="label">{entity.label}</td>
       <td className="total">{entity.total}</td>
-      <td className="recent">{entity.recent}</td>
+      <td className={recentClassName(entity.recent)}>
+        {entity.recent > 0 ? entity.recent : '–'}
+      </td>
     </StyledEntityFrequencyRow>
   )
 }
@@ -89,6 +99,10 @@ const StyledEntityFrequencyRow = styled.tr`
 
   .recent {
     background-color: #fefaee;
+  }
+
+  .zero {
+    color: lightgray;
   }
 `
 
