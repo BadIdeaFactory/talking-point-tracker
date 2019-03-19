@@ -12,6 +12,8 @@ import client from '../ApolloClient'
 // Component
 class App extends React.Component {
   state = {
+    activeEntity: '',
+    highlightedEntity: '',
     intervalScope: {
       key: 'past4hours',
       startTime: moment().subtract(4, 'hours').toISOString(),
@@ -46,8 +48,16 @@ class App extends React.Component {
     this.setState({ intervalScope })
   }
 
+  setActiveEntity = (activeEntity) => {
+    this.setState({ activeEntity })
+  }
+
+  setHighlightedEntity = (highlightedEntity) => {
+    this.setState({ highlightedEntity })
+  }
+
   render() {
-    const { intervalScope } = this.state
+    const { activeEntity, highlightedEntity, intervalScope } = this.state
     return (
       <>
         <div id="mainframe">
@@ -61,6 +71,10 @@ class App extends React.Component {
                 path="/"
                 render={props => (
                   <Dashboard
+                    activeEntity={activeEntity}
+                    setActiveEntity={this.setActiveEntity}
+                    highlightedEntity={highlightedEntity}
+                    setHighlightedEntity={this.setHighlightedEntity}
                     intervalScope={intervalScope}
                     {...props}
                   />

@@ -5,8 +5,21 @@ import styled from 'styled-components'
 
 const EntityFrequencyRow = (props) => {
   const {
-    history, entity, active, setActiveEntity,
+    history,
+    entity,
+    active,
+    highlighted,
+    setActiveEntity,
+    setHighlightedEntity,
   } = props
+
+  const highlightEntity = () => {
+    setHighlightedEntity(entity.label)
+  }
+
+  const unhighlightEntity = () => {
+    setHighlightedEntity('')
+  }
 
   const selectEntity = () => {
     if (active) {
@@ -18,10 +31,26 @@ const EntityFrequencyRow = (props) => {
     }
   }
 
-  const setClassName = () => ((active) ? 'active' : '')
+  const setClassName = () => {
+    const classNames = []
+    if (active) {
+      classNames.push('active')
+    }
+    if (highlighted) {
+      classNames.push('highlighted')
+    }
+    return classNames.join(' ')
+  }
 
   return (
-    <StyledEntityFrequencyRow onClick={selectEntity} className={setClassName()}>
+    <StyledEntityFrequencyRow
+      onClick={selectEntity}
+      onFocus={highlightEntity}
+      onBlur={unhighlightEntity}
+      onMouseEnter={highlightEntity}
+      onMouseLeave={unhighlightEntity}
+      className={setClassName()}
+    >
       <td className="label">{entity.label}</td>
       <td className="total">{entity.total}</td>
       <td className="recent">{entity.recent}</td>
@@ -30,7 +59,9 @@ const EntityFrequencyRow = (props) => {
 }
 EntityFrequencyRow.propTypes = {
   active: PropTypes.bool.isRequired,
+  highlighted: PropTypes.bool.isRequired,
   setActiveEntity: PropTypes.func.isRequired,
+  setHighlightedEntity: PropTypes.func.isRequired,
   entity: PropTypes.shape({
     label: PropTypes.string.isRequired,
     total: PropTypes.number.isRequired,

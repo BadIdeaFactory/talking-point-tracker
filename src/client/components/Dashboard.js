@@ -37,9 +37,11 @@ const RECENT_SENTENCES_QUERY = gql`
 `
 
 class Dashboard extends React.Component {
-  state = {}
-
   static propTypes = {
+    activeEntity: PropTypes.string.isRequired,
+    setActiveEntity: PropTypes.func.isRequired,
+    highlightedEntity: PropTypes.string.isRequired,
+    setHighlightedEntity: PropTypes.func.isRequired,
     intervalScope: PropTypes.shape({
       key: PropTypes.string,
       startTime: PropTypes.string,
@@ -48,13 +50,14 @@ class Dashboard extends React.Component {
     }).isRequired,
   }
 
-  setActiveEntity = (activeEntity) => {
-    this.setState({ activeEntity })
-  }
-
   render() {
-    const { intervalScope } = this.props
-    const { activeEntity } = this.state
+    const {
+      activeEntity,
+      setActiveEntity,
+      highlightedEntity,
+      setHighlightedEntity,
+      intervalScope,
+    } = this.props
 
     return (
       <>
@@ -102,7 +105,9 @@ class Dashboard extends React.Component {
                   <EntityFrequencyTable
                     data={frequencyTotals}
                     activeEntity={activeEntity}
-                    setActiveEntity={this.setActiveEntity}
+                    highlightedEntity={highlightedEntity}
+                    setActiveEntity={setActiveEntity}
+                    setHighlightedEntity={setHighlightedEntity}
                   />
                 </StyledEntityFrequencyTableWrapper>
                 <StyledEntityFrequencyGraphWrapper>
