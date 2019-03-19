@@ -37,6 +37,7 @@ const StyledColumnHeader = styled.th`
     margin: 0;
     border: none;
     border-bottom: 1px solid #2F80ED;
+    background-color: transparent;
     cursor: pointer;
 
     &[data-sorted=true] {
