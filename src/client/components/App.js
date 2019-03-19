@@ -12,35 +12,52 @@ import client from '../ApolloClient'
 // Component
 class App extends React.Component {
   state = {
+    activeEntity: '',
+    highlightedEntity: '',
     intervalScope: {
       key: 'past4hours',
       startTime: moment().subtract(4, 'hours').toISOString(),
+      recentStartTime: moment().subtract(1, 'hour').toISOString(),
       endTime: moment().toISOString(),
     },
   }
 
   setIntervalScope = (key) => {
     const endTime = moment().toISOString()
-    let startTime = moment(endTime)
+    let startTime = ''
+    let recentStartTime = ''
     switch (key) {
       case 'pastweek':
-        startTime = startTime.subtract(1, 'week').toISOString()
+        startTime = moment(endTime).subtract(1, 'week').toISOString()
+        recentStartTime = moment(endTime).subtract(1, 'day').toISOString()
         break
       case 'past24hours':
-        startTime = startTime.subtract(24, 'hours').toISOString()
+        startTime = moment(endTime).subtract(24, 'hours').toISOString()
+        recentStartTime = moment(endTime).subtract(4, 'hours').toISOString()
         break
       case 'past4hours':
       default:
-        startTime = startTime.subtract(4, 'hours').toISOString()
+        startTime = moment(endTime).subtract(4, 'hours').toISOString()
+        recentStartTime = moment(endTime).subtract(1, 'hour').toISOString()
         break
     }
 
-    const intervalScope = { key, startTime, endTime }
+    const intervalScope = {
+      key, startTime, recentStartTime, endTime,
+    }
     this.setState({ intervalScope })
   }
 
+  setActiveEntity = (activeEntity) => {
+    this.setState({ activeEntity })
+  }
+
+  setHighlightedEntity = (highlightedEntity) => {
+    this.setState({ highlightedEntity })
+  }
+
   render() {
-    const { intervalScope } = this.state
+    const { activeEntity, highlightedEntity, intervalScope } = this.state
     return (
       <>
         <div id="mainframe">
@@ -54,6 +71,10 @@ class App extends React.Component {
                 path="/"
                 render={props => (
                   <Dashboard
+                    activeEntity={activeEntity}
+                    setActiveEntity={this.setActiveEntity}
+                    highlightedEntity={highlightedEntity}
+                    setHighlightedEntity={this.setHighlightedEntity}
                     intervalScope={intervalScope}
                     {...props}
                   />

@@ -38,88 +38,104 @@ const RECENT_SENTENCES_QUERY = gql`
 
 class Dashboard extends React.Component {
   static propTypes = {
+    activeEntity: PropTypes.string.isRequired,
+    setActiveEntity: PropTypes.func.isRequired,
+    highlightedEntity: PropTypes.string.isRequired,
+    setHighlightedEntity: PropTypes.func.isRequired,
     intervalScope: PropTypes.shape({
       key: PropTypes.string,
       startTime: PropTypes.string,
+      recentStartTime: PropTypes.string,
       endTime: PropTypes.string,
     }).isRequired,
   }
 
   render() {
-    const { intervalScope } = this.props
+    const {
+      activeEntity,
+      setActiveEntity,
+      highlightedEntity,
+      setHighlightedEntity,
+      intervalScope,
+    } = this.props
+
     return (
       <>
-        <StyledEntityFrequencyTableWrapper>
-          <Query
-            query={ALL_ENTITIES_QUERY}
-            variables={{
-              after: intervalScope.startTime,
-              before: intervalScope.endTime,
-            }}
-          >
-            {({ data, error, loading }) => {
-              if (loading) {
-                return <p>Loading...</p>
-              }
-              if (error) {
-                return <p>{error.message}</p>
-              }
+        <Query
+          query={ALL_ENTITIES_QUERY}
+          variables={{
+            after: intervalScope.startTime,
+            before: intervalScope.endTime,
+          }}
+        >
+          {({ data, error, loading }) => {
+            if (loading) {
+              return <p>Loading...</p>
+            }
+            if (error) {
+              return <p>{error.message}</p>
+            }
 
-              // TODO: Aggregate this via a query instead of th'frontend
-              const aggregatedData = data.namedEntities.reduce((accumulator, currentValue) => {
+            const recentStartTime = moment(intervalScope.recentStartTime)
+            const aggregatedData = data.namedEntities
+              .filter(namedEntity => ['PERSON', 'ORG'].includes(namedEntity.type))
+              .reduce((accumulator, currentValue) => {
                 if (!(currentValue.entity in accumulator)) {
-                  accumulator[currentValue.entity] = 0
+                  accumulator[currentValue.entity] = {
+                    total: 0,
+                    recent: 0,
+                  }
                 }
-                accumulator[currentValue.entity] += 1
+                accumulator[currentValue.entity].total += 1
+                if (moment(parseInt(currentValue.createdAt, 10)).isSameOrAfter(recentStartTime)) {
+                  accumulator[currentValue.entity].recent += 1
+                }
                 return accumulator
               }, {})
 
-              const frequencyTotals = Object.keys(aggregatedData).map(key => ({
-                key,
-                total: aggregatedData[key],
-              }))
+            const frequencyTotals = Object.keys(aggregatedData).map(key => ({
+              label: key,
+              total: aggregatedData[key].total,
+              recent: aggregatedData[key].recent,
+            })).sort((a, b) => (b.total - a.total))
 
-              // TODO: Which column we sort by will be determined by state
-              frequencyTotals.sort((a, b) => b.total - a.total)
-
-              const labels = frequencyTotals.map(x => x.key)
-              const totals = frequencyTotals.map(x => x.total)
-
-              return (
-                <EntityFrequencyTable
-                  data={totals}
-                  labels={labels}
-                />
-              )
-            }}
-          </Query>
-        </StyledEntityFrequencyTableWrapper>
-        <StyledEntityFrequencyGraphWrapper>
-          <img alt="Graph" src={graph} width="686" height="772" />
-        </StyledEntityFrequencyGraphWrapper>
-        <StyledTranscriptAreaWrapper>
-          <Query
-            query={RECENT_SENTENCES_QUERY}
-            variables={{ after: moment().subtract(5, 'minutes').toISOString() }}
-          >
-            {({ data, error, loading }) => {
-              if (loading) {
-                return <p>Loading...</p>
-              }
-              if (error) {
-                return <p>{error.message}</p>
-              }
-
-              return (
-                <>
-                  <LiveTranscript
-                    sentences={data.sentences}
+            return (
+              <>
+                <StyledEntityFrequencyTableWrapper>
+                  <EntityFrequencyTable
+                    data={frequencyTotals}
+                    activeEntity={activeEntity}
+                    highlightedEntity={highlightedEntity}
+                    setActiveEntity={setActiveEntity}
+                    setHighlightedEntity={setHighlightedEntity}
                   />
-                </>
-              )
-            }}
-          </Query>
-        </StyledTranscriptAreaWrapper>
+                </StyledEntityFrequencyTableWrapper>
+                <StyledEntityFrequencyGraphWrapper>
+                  <img alt="Graph" src={graph} width="686" height="772" />
+                </StyledEntityFrequencyGraphWrapper>
+              </>
+            )
+          }}
+        </Query>
+        <Query
+          query={RECENT_SENTENCES_QUERY}
+          variables={{ after: moment().subtract(5, 'minutes').toISOString() }}
+        >
+          {({ data, error, loading }) => {
+            if (loading) {
+              return <p>Loading...</p>
+            }
+            if (error) {
+              return <p>{error.message}</p>
+            }
+
+            return (
+              <StyledTranscriptAreaWrapper>
+                <LiveTranscript sentences={data.sentences} />
+              </StyledTranscriptAreaWrapper>
+            )
+          }}
+        </Query>
       </>
     )
   }
