@@ -45,6 +45,7 @@ const StyledColumnHeader = styled.th`
     }
     &:active, &:focus {
       outline: none;
+      color: inherit;
     }
   }
 `
