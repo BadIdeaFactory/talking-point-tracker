@@ -80,6 +80,13 @@ const StyledEntityFrequencyRow = styled.tr`
     background-color: #eb5757;
   }
 
+  &.active {
+    -webkit-position: sticky;
+    position: sticky;
+    top: 0;
+    bottom: 0;
+  }
+
   .recent {
     background-color: #fefaee;
   }
