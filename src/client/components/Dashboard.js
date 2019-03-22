@@ -8,7 +8,7 @@ import moment from 'moment'
 
 import LiveTranscript from './Transcripts/LiveTranscript'
 import EntityFrequencyTable from './EntityFrequency/Table'
-import graph from '../images/fake-graph.jpg'
+import EntityFrequencyGraph from './EntityFrequency/Graph'
 
 const ALL_ENTITIES_QUERY = gql`
   query ALL_ENTITIES_QUERY(
@@ -47,6 +47,7 @@ class Dashboard extends React.Component {
       startTime: PropTypes.string,
       recentStartTime: PropTypes.string,
       endTime: PropTypes.string,
+      ticks: PropTypes.number,
     }).isRequired,
   }
 
@@ -76,34 +77,62 @@ class Dashboard extends React.Component {
               return <p>{error.message}</p>
             }
 
-            const recentStartTime = moment(intervalScope.recentStartTime)
-            const aggregatedData = data.namedEntities
-              .filter(namedEntity => ['PERSON', 'ORG'].includes(namedEntity.type))
-              .reduce((accumulator, currentValue) => {
-                if (!(currentValue.entity in accumulator)) {
-                  accumulator[currentValue.entity] = {
-                    total: 0,
-                    recent: 0,
-                  }
-                }
-                accumulator[currentValue.entity].total += 1
-                if (moment(parseInt(currentValue.createdAt, 10)).isSameOrAfter(recentStartTime)) {
-                  accumulator[currentValue.entity].recent += 1
-                }
-                return accumulator
-              }, {})
+            const startTime = moment(intervalScope.startTime)
+            const recentStartTime = moment(intervalScope.recentStartTime).valueOf()
+            const endTime = moment(intervalScope.endTime)
+            const tickLength = endTime.diff(startTime) / intervalScope.ticks
 
-            const frequencyTotals = Object.keys(aggregatedData).map(key => ({
+            const filteredData = data.namedEntities.filter(namedEntity => ['PERSON', 'ORG'].includes(namedEntity.type))
+
+            const aggregatedData = filteredData.reduce((accumulator, currentValue) => {
+              if (!(currentValue.entity in accumulator)) {
+                accumulator[currentValue.entity] = {
+                  total: 0,
+                  recent: 0,
+                  ticks: Array(intervalScope.ticks).fill(0),
+                }
+              }
+              // Increase total
+              accumulator[currentValue.entity].total += 1
+
+              const createdAt = parseInt(currentValue.createdAt, 10)
+
+              // Increase recent
+              if (createdAt >= recentStartTime) {
+                accumulator[currentValue.entity].recent += 1
+              }
+
+              // Increase current tick bucket
+              const startToTimestamp = createdAt - startTime
+              const tick = Math.floor(startToTimestamp / tickLength)
+              accumulator[currentValue.entity].ticks[tick] += 1
+
+              return accumulator
+            }, {})
+
+            const frequencyTableData = Object.keys(aggregatedData).map(key => ({
               label: key,
               total: aggregatedData[key].total,
               recent: aggregatedData[key].recent,
             })).sort((a, b) => (b.total - a.total))
 
+            const frequencyGraphData = Object.keys(aggregatedData)
+              .filter(entityName => (aggregatedData[entityName].total > 2))
+              .reduce((accumulator, entityName) => {
+                accumulator.forEach((tick, i) => {
+                  if (!(entityName in Object.keys(tick))) {
+                    accumulator[i][entityName] = 0
+                  }
+                  accumulator[i][entityName] += aggregatedData[entityName].ticks[i]
+                })
+                return accumulator
+              }, Array(intervalScope.ticks).fill({}).map((tick, i) => ({ name: `tick${i}` })))
+
             return (
               <>
                 <StyledEntityFrequencyTableWrapper>
                   <EntityFrequencyTable
-                    data={frequencyTotals}
+                    data={frequencyTableData}
                     activeEntity={activeEntity}
                     highlightedEntity={highlightedEntity}
                     setActiveEntity={setActiveEntity}
@@ -111,7 +140,14 @@ class Dashboard extends React.Component {
                   />
                 </StyledEntityFrequencyTableWrapper>
                 <StyledEntityFrequencyGraphWrapper>
-                  <img alt="Graph" src={graph} width="686" height="772" />
+                  <EntityFrequencyGraph
+                    data={frequencyGraphData}
+                    tickInterval={intervalScope.key === 'pastweek' ? 'Day' : 'Hour'}
+                    activeEntity={activeEntity}
+                    highlightedEntity={highlightedEntity}
+                    setActiveEntity={setActiveEntity}
+                    setHighlightedEntity={setHighlightedEntity}
+                  />
                 </StyledEntityFrequencyGraphWrapper>
               </>
             )
@@ -145,21 +181,21 @@ const StyledEntityFrequencyTableWrapper = styled.div`
   grid-area: entity-list;
   position: relative;
   overflow: hidden;
-  padding: 1rem;
-  max-width: 300px;
-  border-bottom: 3px solid red;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 `
 
 const StyledEntityFrequencyGraphWrapper = styled.div`
   grid-area: entity-graph;
   position: relative;
   overflow: hidden;
-  padding: 1rem;
-  border-bottom: 3px solid yellow;
-  img {
-    width: 100%;
-    height: auto;
-    max-height: 100%
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+
+  .recharts-line {
+    cursor: pointer;
   }
 `
 
@@ -167,9 +203,9 @@ const StyledTranscriptAreaWrapper = styled.div`
   grid-area: transcripts;
   position: relative;
   overflow: hidden;
-  padding: 1rem;
-  max-width: 500px;
-  border-bottom: 3px solid green;
+  padding-top: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
 `
 
 export default Dashboard

@@ -29,11 +29,11 @@ const StyledColumnHeader = styled.th`
   > button {
     text-transform: capitalize;
     appearance: none;
-    font-size: 1rem;
-    line-height: 1rem;
+    font-size: 1em;
+    line-height: 1em;
     font-weight: 600;
     font-family: inherit;
-    padding: 0.15rem 0;
+    padding: 0.15em 0;
     margin: 0;
     border: none;
     border-bottom: 1px solid #2F80ED;
