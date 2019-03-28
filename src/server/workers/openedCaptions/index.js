@@ -81,7 +81,7 @@ async function processSentence(content) {
   ents.map(ent => models.NamedEntity.create({
     entity: sentence.substring(ent.start, ent.end),
     type: ent.label,
-    sentenceId: storedSentence.id,
+    sentence_id: storedSentence.id,
     model: 'en_core_web_lg',
   }))
 }
