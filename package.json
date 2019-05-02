@@ -4,7 +4,7 @@
   "description": "Keep track of what is being discussed on live television.",
   "main": "index.js",
   "repository": "git@github.com:BadIdeaFactory/talking-point-tracker.git",
-  "author": "Dan Schultz <slifty@gmail.com>",
+  "author": "Bad Idea Factory <biffuddotcom@biffud.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "apollo-boost": "^0.1.22",
