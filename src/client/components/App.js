@@ -19,31 +19,36 @@ class App extends React.Component {
       startTime: moment().subtract(4, 'hours').toISOString(),
       recentStartTime: moment().subtract(1, 'hour').toISOString(),
       endTime: moment().toISOString(),
+      ticks: 4,
     },
   }
 
   setIntervalScope = (key) => {
     const endTime = moment().toISOString()
+    let ticks = 0
     let startTime = ''
     let recentStartTime = ''
     switch (key) {
       case 'pastweek':
+        ticks = 7
         startTime = moment(endTime).subtract(1, 'week').toISOString()
         recentStartTime = moment(endTime).subtract(1, 'day').toISOString()
         break
       case 'past24hours':
+        ticks = 24
         startTime = moment(endTime).subtract(24, 'hours').toISOString()
         recentStartTime = moment(endTime).subtract(4, 'hours').toISOString()
         break
       case 'past4hours':
       default:
+        ticks = 4
         startTime = moment(endTime).subtract(4, 'hours').toISOString()
         recentStartTime = moment(endTime).subtract(1, 'hour').toISOString()
         break
     }
 
     const intervalScope = {
-      key, startTime, recentStartTime, endTime,
+      key, startTime, recentStartTime, endTime, ticks,
     }
     this.setState({ intervalScope })
   }

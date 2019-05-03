@@ -55,8 +55,8 @@ const EntityFrequencyRow = (props) => {
       onClick={selectEntity}
       onFocus={highlightEntity}
       onBlur={unhighlightEntity}
-      onMouseEnter={highlightEntity}
-      onMouseLeave={unhighlightEntity}
+      // onMouseEnter={highlightEntity}
+      // onMouseLeave={unhighlightEntity}
       className={rowClassName()}
     >
       <td className="label">{entity.label}</td>
@@ -83,11 +83,9 @@ EntityFrequencyRow.propTypes = {
 }
 
 const StyledEntityFrequencyRow = styled.tr`
-  &.active > td,
   &:hover > td {
     cursor: pointer;
-    color: white;
-    background-color: #eb5757;
+    background-color: #fcd6d5;
   }
 
   &.active {
@@ -95,10 +93,15 @@ const StyledEntityFrequencyRow = styled.tr`
     position: sticky;
     top: 0;
     bottom: 0;
+    > td {
+      cursor: pointer;
+      color: white;
+      background-color: #f15a58;
+    }
   }
 
   .recent {
-    background-color: #fefaee;
+    background-color: #fff9ea;
   }
 
   .zero {
